@@ -45,6 +45,7 @@ export default function MyReportsPage() {
   }, [router]);
 
   const completedCount = useMemo(() => reports.filter((r) => r.status === "completed").length, [reports]);
+  const generatingCount = useMemo(() => reports.filter((r) => r.status === "generating").length, [reports]);
 
   return (
     <div className="min-h-screen bg-[linear-gradient(180deg,#fff7ed_0%,#ffffff_35%,#eff6ff_100%)] py-12 px-4">
@@ -52,10 +53,11 @@ export default function MyReportsPage() {
         <div className="rounded-3xl border bg-white/80 backdrop-blur p-8 shadow-sm flex flex-wrap justify-between gap-4">
           <div>
             <h1 className="text-3xl font-black tracking-tight mb-2">기록 페이지</h1>
-            <p className="text-slate-600">생성한 보고서를 다시 열고 수정/검토할 수 있습니다.</p>
+            <p className="text-slate-600">생성한 보고서를 다시 열고 수정/검토할 수 있습니다. 생성 중 항목을 누르면 진행 화면으로 돌아갑니다.</p>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-600">완료 보고서 {completedCount}개</span>
+            <span className="text-sm text-indigo-700">생성 중 {generatingCount}개</span>
             <Button onClick={() => router.push("/subject")} className="bg-slate-900 hover:bg-slate-950">
               <Plus className="w-4 h-4 mr-1" /> 새 보고서
             </Button>
@@ -92,7 +94,9 @@ export default function MyReportsPage() {
                     </div>
                   </div>
                   <div className="text-right text-sm text-slate-500">
-                    <p>{r.status}</p>
+                    <p className={r.status === "generating" ? "text-indigo-700 font-semibold" : ""}>
+                      {r.status === "generating" ? "생성 중 (클릭하면 진행 화면)" : r.status}
+                    </p>
                     {r.is_bookmarked && <p className="text-amber-600">★ 북마크</p>}
                   </div>
                 </CardContent>
