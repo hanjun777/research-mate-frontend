@@ -16,9 +16,9 @@ type Props = {
   progress: number;
   phases: Phase[];
   tip?: string;
-  funMessages?: string[];
   realTimeMessage?: string;
   activityLogs?: string[];
+  currentPhase?: string;
   quiz?: {
     question: string;
     answerHint: string;
@@ -31,13 +31,11 @@ export function PhaseProgress({
   progress,
   phases,
   tip,
-  funMessages = [],
   realTimeMessage,
   activityLogs = [],
   quiz,
 }: Props) {
   const safeProgress = Math.max(0, Math.min(100, Math.round(progress)));
-  const [messageIndex, setMessageIndex] = useState(0);
 
   // Randomly select a quiz from the bank on mount
   const [currentInteractiveQuiz, setCurrentInteractiveQuiz] = useState<Quiz | null>(null);
@@ -47,20 +45,6 @@ export function PhaseProgress({
     const randomIndex = Math.floor(Math.random() * QUIZ_BANK.length);
     setCurrentInteractiveQuiz(QUIZ_BANK[randomIndex]);
   }, []);
-
-  const currentMessage = useMemo(() => {
-    if (realTimeMessage) return realTimeMessage;
-    if (funMessages.length === 0) return "";
-    return funMessages[messageIndex % funMessages.length];
-  }, [realTimeMessage, funMessages, messageIndex]);
-
-  useEffect(() => {
-    if (funMessages.length <= 1) return;
-    const timer = setInterval(() => {
-      setMessageIndex((prev) => prev + 1);
-    }, 1700);
-    return () => clearInterval(timer);
-  }, [funMessages.length]);
 
   const visibleLogs = useMemo(() => {
     if (activityLogs.length === 0) return [];
@@ -102,16 +86,10 @@ export function PhaseProgress({
       </div>
 
       {safeProgress >= 95 && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 mb-3 animate-pulse">
-          <p className="text-sm text-emerald-800 font-semibold inline-flex items-center gap-1">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 mb-4 animate-pulse shadow-sm">
+          <p className="text-sm text-emerald-800 font-bold inline-flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4" /> 마무리 단계입니다. 곧 완료됩니다.
           </p>
-        </div>
-      )}
-
-      {currentMessage && (
-        <div className="rounded-xl border border-indigo-200 bg-indigo-50/80 px-3 py-2 mb-3">
-          <p className="text-sm text-indigo-900 font-medium">{currentMessage}</p>
         </div>
       )}
 
@@ -121,18 +99,31 @@ export function PhaseProgress({
         <span className="h-1.5 flex-1 rounded-full bg-cyan-300 animate-pulse [animation-delay:300ms]" />
       </div>
 
-      <div className="grid gap-2">
+      <div className="grid gap-3">
         {phases.map((phase) => {
           const done = safeProgress >= phase.threshold;
           const active = !done && safeProgress >= phase.threshold - 20;
           return (
             <div
               key={phase.label}
-              className={`rounded-xl border p-3 transition-colors ${done ? "border-emerald-200 bg-emerald-50" : active ? "border-blue-200 bg-blue-50" : "border-slate-200 bg-slate-50"
-                }`}
+              className={`rounded-2xl border p-4 transition-all duration-300 ${
+                done 
+                  ? "border-emerald-200 bg-emerald-50/50 opacity-60" 
+                  : active 
+                    ? "border-indigo-400 bg-indigo-50 shadow-md shadow-indigo-100 scale-[1.02]" 
+                    : "border-slate-100 bg-slate-50 opacity-50"
+              }`}
             >
-              <p className="text-sm font-semibold text-slate-800">{phase.label}</p>
-              <p className="text-xs text-slate-600 mt-0.5">{phase.description}</p>
+              <div className="flex items-center justify-between">
+                <p className={`text-[15px] font-bold ${active ? "text-indigo-900" : done ? "text-emerald-800" : "text-slate-600"}`}>
+                  {phase.label}
+                </p>
+                {active && <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />}
+                {done && <CheckCircle2 className="w-4 h-4 text-emerald-500" />}
+              </div>
+              <p className={`text-[13px] mt-1 ${active ? "text-indigo-700/80 font-medium" : "text-slate-500"}`}>
+                {phase.description}
+              </p>
             </div>
           );
         })}

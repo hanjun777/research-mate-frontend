@@ -3,13 +3,16 @@
 import React, { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { useRouter } from 'next/navigation';
-import { Star, FileText, Users, ThumbsUp, ArrowRight } from 'lucide-react';
+import { Star, FileText, Users, ThumbsUp, ArrowRight, MessageCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useMindMap } from '@/context/MindMapContext';
 import { TopicGeneratorDemo } from '@/components/landing/TopicGeneratorDemo';
 import { TestimonialCarousel } from '@/components/landing/TestimonialCarousel';
 import { ReportPreviewDemo } from '@/components/landing/ReportPreviewDemo';
+import { ComparisonSection } from '@/components/landing/ComparisonSection';
+import { ProblemSection } from '@/components/landing/ProblemSection';
+import { DualAISection } from '@/components/landing/DualAISection';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -40,24 +43,18 @@ export default function LandingPage() {
                 학년, 과목, 관심사에 맞춘 AI 기반 추천 서비스로 당신만의 경쟁력을 만드세요.
                 수행평가부터 세특까지, 막막했던 주제 선정을 도와드립니다.
               </p>
-              <div className="flex gap-3 pt-4">
+              <div className="flex flex-wrap gap-3 pt-4">
                 <Button size="lg" className="h-12 px-8 text-lg bg-blue-600 hover:bg-blue-700" onClick={() => router.push('/subject')}>
                   주제 추천받기
                 </Button>
-                <Button size="lg" variant="outline" className="h-12 px-8 text-lg">
-                  이용 가이드
+                <Button size="lg" className="h-12 px-6 text-lg bg-[#FEE500] text-[#371D1E] hover:bg-[#FDD800] border-0 font-bold flex items-center shadow-sm" onClick={() => window.open('https://open.kakao.com/o/gPm7rkbi', '_blank')}>
+                  <MessageCircle className="w-5 h-5 mr-2 fill-current" />
+                  연구소 오픈채팅방
                 </Button>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-500 pt-2">
-                <div className="flex -space-x-2">
-                  <Avatar className="w-8 h-8 border-2 border-white"><AvatarFallback>U1</AvatarFallback></Avatar>
-                  <Avatar className="w-8 h-8 border-2 border-white"><AvatarFallback>U2</AvatarFallback></Avatar>
-                  <Avatar className="w-8 h-8 border-2 border-white"><AvatarFallback>U3</AvatarFallback></Avatar>
-                </div>
-                <p>이미 <span className="font-bold text-black">5,000+</span> 명의 학생들이 사용 중</p>
-              </div>
+
             </div>
-            <div className="flex justify-center">
+            <div className="flex justify-center mt-6 lg:mt-12">
               {/* Illustration / Demo */}
               <TopicGeneratorDemo />
             </div>
@@ -65,40 +62,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-12 bg-slate-50 border-y">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-            <div className="bg-white p-6 rounded-2xl shadow-sm">
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-blue-100 text-blue-600 rounded-xl">
-                  <FileText className="w-8 h-8" />
-                </div>
-              </div>
-              <h3 className="text-3xl font-bold mb-1">15,000+</h3>
-              <p className="text-gray-500">누적 추천 주제</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm">
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-indigo-100 text-indigo-600 rounded-xl">
-                  <Users className="w-8 h-8" />
-                </div>
-              </div>
-              <h3 className="text-3xl font-bold mb-1">5,200+</h3>
-              <p className="text-gray-500">이용 학생 수</p>
-            </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm">
-              <div className="flex justify-center mb-4">
-                <div className="p-3 bg-purple-100 text-purple-600 rounded-xl">
-                  <ThumbsUp className="w-8 h-8" />
-                </div>
-              </div>
-              <h3 className="text-3xl font-bold mb-1">98%</h3>
-              <p className="text-gray-500">사용자 만족도</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Problem Section */}
+      <ProblemSection />
 
       {/* Steps Section */}
       <section className="py-20">
@@ -128,6 +93,9 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Dual AI Collaboration Section */}
+      <DualAISection />
+
       {/* Report Preview Section - NEW */}
       <section className="py-24 bg-slate-50 overflow-hidden">
         <div className="container mx-auto px-4">
@@ -150,6 +118,9 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Comparison Section */}
+      <ComparisonSection />
+
       {/* Testimonials Section */}
       <section className="py-24 bg-white">
         <div className="container mx-auto px-4 md:px-6">
@@ -168,26 +139,37 @@ export default function LandingPage() {
       <section className="py-20 bg-blue-600 text-white text-center">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold mb-6">지금 바로 나만의 주제를 찾아보세요</h2>
-          <p className="text-blue-100 mb-8 max-w-2xl mx-auto">입시 준비, 더 이상 혼자 고민하지 마세요. 세특연구소가 함께합니다.</p>
-          <Button variant="secondary" size="lg" className="h-14 px-10 text-lg font-bold" onClick={() => router.push('/subject')}>
-            무료로 주제 추천받기
-          </Button>
+          <p className="text-blue-100 mb-8 max-w-2xl mx-auto">입시 준비, 더 이상 혼자 고민하지 마세요. 세특연구소 커뮤니티가 함께합니다.</p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button variant="secondary" size="lg" className="h-14 px-10 text-lg font-bold shadow-lg" onClick={() => router.push('/subject')}>
+              무료로 주제 추천받기
+            </Button>
+            <Button size="lg" className="h-14 px-8 text-lg font-bold bg-[#FEE500] text-[#371D1E] hover:bg-[#FDD800] border-0 flex items-center shadow-lg" onClick={() => window.open('https://open.kakao.com/o/gPm7rkbi', '_blank')}>
+              <MessageCircle className="w-6 h-6 mr-2 fill-current" />
+              연구소 오픈채팅방
+            </Button>
+          </div>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="bg-white py-12 border-t text-sm text-gray-500">
         <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-2 mb-4 md:mb-0">
-            <span className="font-bold text-lg text-slate-800">세특연구소</span>
+          <div className="flex items-center gap-2 mb-4 md:mb-0">
+            <span className="font-bold text-lg text-slate-800">ColdBoot</span>
+            <span className="text-slate-300 mx-1">|</span>
+            <span className="text-slate-600 text-sm">세특연구소</span>
           </div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-black">이용약관</a>
-            <a href="#" className="hover:text-black">개인정보처리방침</a>
-            <a href="#" className="hover:text-black">고객센터</a>
-          </div>
-          <div className="mt-4 md:mt-0">
-            © 2024 세특연구소. All rights reserved.
+          <div className="flex flex-col md:items-end text-xs text-slate-500 gap-1">
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <span>상호명: ColdBoot (콜드부트)</span>
+              <span>대표자: 류한준, 강필중</span>
+              <span>사업자등록번호: 000-00-00000</span>
+            </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-1">
+              <span>이메일: coldbootcp@gmail.com</span>
+              <span>© 2026 ColdBoot. All rights reserved.</span>
+            </div>
           </div>
         </div>
       </footer>

@@ -32,7 +32,6 @@ export function ReportPreviewDemo() {
                             <CheckCircle2 className="w-3 h-3" />
                             Verified
                         </Badge>
-                        <Download className="w-4 h-4 text-slate-400" />
                     </div>
                 </div>
 
@@ -42,89 +41,89 @@ export function ReportPreviewDemo() {
                         {/* Report Header */}
                         <div className="text-center border-b pb-6 mb-8">
                             <div className="flex justify-center mb-4">
-                                <Badge variant="secondary" className="bg-slate-100 text-slate-600">수학·과학 융합 탐구</Badge>
+                                <Badge variant="secondary" className="bg-slate-100 text-slate-600">경제·수학 융합 탐구</Badge>
                             </div>
                             <h1 className="text-2xl md:text-3xl font-bold mb-3 text-slate-900 leading-tight">
-                                <span className="text-blue-700">미분방정식</span>을 활용한 감염병 확산(SIR) 모델 분석과<br />
-                                집단 면역 임계점(<span className="italic">H_c</span>)의 수학적 도출
+                                금융공학에서의 수열 응용:<br />
+                                주식 가격 예측을 위한 피보나치 수열과 기하급수 모델 분석
                             </h1>
-                            <p className="text-slate-500 italic text-[10px] md:text-xs">Mathematical Analysis of SIR Epidemic Model using Differential Equations</p>
+                            <p className="text-slate-500 italic text-[10px] md:text-xs">Advanced Subject Exploration Report</p>
                             <div className="flex justify-center gap-4 mt-6 text-xs text-slate-600 font-sans font-medium">
                                 <span>2학년 김수학</span>
                                 <span className="text-slate-300">|</span>
-                                <span>관련 교과: 미적분, 생명과학 I</span>
+                                <span>관련 교과: 경제, 수학 I</span>
                             </div>
                         </div>
 
                         {/* Report Sections */}
-                        <div className="space-y-8 text-xs md:text-sm leading-relaxed text-justify">
+                        <div className="space-y-6 text-xs md:text-sm leading-relaxed text-justify text-slate-700">
                             <section>
-                                <h2 className="text-sm md:text-base font-bold text-slate-800 border-l-4 border-slate-800 pl-3 mb-3">1. 탐구 동기 및 교과 연계성</h2>
-                                <p className="text-slate-600">
-                                    <span className="font-bold text-blue-700">'미적분'</span> 시간에 배운 <span className="bg-yellow-100 px-1 font-bold text-slate-800">순간변화율(도함수)</span>의 개념이 실제 자연 현상의 변화를 설명하는 데 어떻게 쓰이는지 궁금했다. 생명과학 원리를 수학적으로 증명해보고자 한다.
+                                <h2 className="text-base md:text-lg font-bold text-slate-900 border-b border-slate-200 pb-2 mb-3 mt-6">1. 연구의 배경과 목적</h2>
+                                <p>
+                                    금융 시장에서 주식 가격 예측은 투자 의사결정의 핵심 요소로 작용하며, 수학적 모델을 활용한 분석 방법이 지속적으로 연구되고 있습니다. 본 연구는 고등학교 수학 교과에서 배운 <strong>수열(특히 피보나치 수열)</strong>과 <strong>지수함수(기하급수 모델의 기초)</strong> 개념을 금융공학 분야로 확장 적용하여, 이론의 실용적 가치를 탐구하는 것을 목표로 합니다.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="text-sm md:text-base font-bold text-blue-700 border-l-4 border-blue-600 pl-3 mb-4">2. 이론적 배경 (SIR 모델링)</h2>
-                                <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 my-4 shadow-sm">
-                                    <div className="flex flex-col gap-4 font-serif text-slate-800 text-center">
-                                        <div className="flex items-center justify-center gap-2">
-                                            <div className="flex flex-col items-center">
-                                                <span className="border-b border-slate-800 text-[10px]">dS</span>
-                                                <span className="text-[10px]">dt</span>
-                                            </div>
-                                            <span>=</span>
-                                            <span>−</span>
-                                            <div className="flex flex-col items-center">
-                                                <span className="border-b border-slate-800 text-[10px]">βSI</span>
-                                                <span className="text-[10px]">N</span>
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center justify-center gap-2">
-                                            <div className="flex flex-col items-center">
-                                                <span className="border-b border-slate-800 text-[10px]">dI</span>
-                                                <span className="text-[10px]">dt</span>
-                                            </div>
-                                            <span>=</span>
-                                            <div className="flex flex-col items-center border-b border-slate-800 text-[10px]">βSI/N</div>
-                                            <span>−</span>
-                                            <span className="text-[10px]">γI</span>
-                                        </div>
-                                    </div>
-                                    <p className="text-[9px] text-slate-500 mt-4 text-center border-t pt-2 font-sans">
-                                        (Eq. 1-2) SIR Mathematical Model
-                                    </p>
-                                </div>
+                                <h2 className="text-base md:text-lg font-bold text-slate-900 border-b border-slate-200 pb-2 mb-3 mt-6">2. 피보나치 수열과 금융 기술적 분석의 이론적 기초</h2>
+                                <p>
+                                    피보나치 수열은 각 항이 앞의 두 항의 합으로 정의되는 수열로, 인접한 항의 비율이 <strong>황금비(Φ ≈ 1.618)</strong>에 수렴하는 성질을 가집니다. 금융공학에서는 이 수열에서 파생된 피보나치 비율(예: 23.6%, 38.2%, 50%, 61.8%)이 주식 차트 분석에 활용됩니다.
+                                </p>
+                                <p className="mt-3">
+                                    이러한 비율들은 <strong>피보나치 되돌림(Fibonacci Retracement)</strong> 기법에서 지지선과 저항선을 설정하는 기준으로 사용되며, 가격 변동의 잠재적 반전 지점을 예측하는 데 적용됩니다. 이는 시장 참여자들의 심리적 반응이 일정한 수학적 패턴을 보일 수 있다는 기술적 분석 가정에 기반을 두고 있습니다.
+                                </p>
                             </section>
 
+                            <div className="flex justify-center my-8 text-slate-300">
+                                <span className="tracking-widest">. . . (일부 내용 생략) . . .</span>
+                            </div>
+
                             <section>
-                                <h2 className="text-sm md:text-base font-bold text-blue-700 border-l-4 border-blue-600 pl-3 mb-4">3. 시뮬레이션 결과</h2>
-                                <div className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
-                                    <svg viewBox="0 0 200 80" className="w-full h-40">
-                                        <line x1="20" y1="70" x2="190" y2="70" stroke="#cbd5e1" strokeWidth="0.5" />
-                                        <line x1="20" y1="10" x2="20" y2="70" stroke="#cbd5e1" strokeWidth="0.5" />
-                                        <path d="M20,15 C60,15 80,65 190,68" fill="none" stroke="#3b82f6" strokeWidth="2" />
-                                        <path d="M20,68 C50,65 70,20 100,20 C130,20 150,65 190,68" fill="none" stroke="#ef4444" strokeWidth="2" />
-                                        <path d="M20,68 C80,68 100,50 190,25" fill="none" stroke="#22c55e" strokeWidth="2" />
-                                    </svg>
+                                <h2 className="text-base md:text-lg font-bold text-slate-900 border-b border-slate-200 pb-2 mb-3 mt-6">3. 기하급수 모델의 수학적 구조와 금융 적용 원리</h2>
+                                <p className="mb-4">
+                                    기하급수 모델은 시간에 따른 지수적 성장을 설명하는 수학적 모델로, 주식 가격 예측에서는 다음과 같은 형태로 표현됩니다.
+                                </p>
+                                <div className="my-4 text-center font-serif italic text-slate-800 bg-slate-50 border border-slate-100 py-5 rounded-md text-lg shadow-sm">
+                                    <span>P(t) = P<sub className="text-sm">0</sub> e<sup className="text-sm">rt</sup></span>
                                 </div>
+                                <p className="leading-relaxed">
+                                    여기서 <strong>P₀</strong>는 초기 가격, <strong>r</strong>은 연속 복리 성장률, <strong>t</strong>는 시간을 나타내며, <strong>e</strong>는 자연로그의 밑입니다. 이 모델은 고등학교 미적분에서 배운 <strong>지수함수와 미분 개념</strong>을 기반으로 하며, 주식 가격이 일정한 성장률로 지수적으로 증가한다는 가정을 포함합니다.
+                                </p>
+                            </section>
+                            
+                            <section>
+                                <h2 className="text-base md:text-lg font-bold text-slate-900 border-b border-slate-200 pb-2 mb-3 mt-6">4. 기하급수 모델의 매개변수 추정과 예측 과정</h2>
+                                <p className="leading-relaxed mb-4">
+                                    성장률 <strong>r</strong>을 추정하기 위해 <strong>최소제곱법</strong>이 적용됩니다. 먼저 모델을 선형화하기 위해 양변에 자연로그를 취하여 <strong>ln P(t) = ln P₀ + rt</strong> 형태로 변환합니다. 이는 <strong>y = a + bt</strong> 로 설정할 때 선형 회귀 모델로 표현될 수 있습니다. 
+                                </p>
+                                <div className="my-4 flex justify-center font-serif italic text-slate-800 bg-slate-50 border border-slate-100 py-4 rounded-md text-lg shadow-sm">
+                                    <div className="flex items-center gap-2">
+                                        <span>b =</span>
+                                        <div className="flex flex-col items-center">
+                                            <span className="border-b border-slate-800 px-2 pb-1 text-base">n Σ(t<sub className="text-xs">i</sub>y<sub className="text-xs">i</sub>) - (Σt<sub className="text-xs">i</sub>)(Σy<sub className="text-xs">i</sub>)</span>
+                                            <span className="pt-1 text-base">n Σ(t<sub className="text-xs">i</sub>)<sup className="text-xs">2</sup> - (Σt<sub className="text-xs">i</sub>)<sup className="text-xs">2</sup></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p>
+                                    과거 주식 가격 데이터를 수집한 후, 시간에 대한 수학적 절차로 기울기 <strong>b</strong>와 절편 <strong>a</strong>를 추정합니다. 이 방법은 고등학교 확률과 통계 교육에서 배운 <strong>회귀 분석</strong> 개념을 금융 데이터에 적용한 탁월한 사례로, 선형대수학적 이론의 실용적 활용을 보여줍니다.
+                                </p>
+                            </section>
+                            
+                            <div className="flex justify-center my-8 text-slate-300">
+                                <span className="tracking-widest">. . . (결론 생략) . . .</span>
+                            </div>
+                            
+                            <section>
+                                <h2 className="text-base md:text-lg font-bold text-slate-900 border-b border-slate-200 pb-2 mb-3 mt-6">7. 생활기록부용 활동 요약</h2>
+                                <p>
+                                    금융공학에서 수열 이론의 적용 방법을 체계적으로 분석함. 피보나치 수열이 주식 차트의 지지/저항선 설정에 활용되는 원리를 이해하고, 기하급수 모델이 가격 성장률 예측에 적용되는 구조를 탐구함. 고등학교 수준의 수학 지식을 금융 분야로 성공적으로 확장하였으며, 수리적 모델링의 실용적 가치와 그 한계를 비판적으로 평가하는 탁월한 STEM 역량을 보여줌.
+                                </p>
                             </section>
                         </div>
                     </div>
-
-                    {/* Bottom Fade Out Effect to imply multi-page */}
-                    <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-white via-white/80 to-transparent pointer-events-none" />
                 </div>
             </motion.div>
-
-            {/* Floating Badge */}
-            <div className="absolute -right-4 top-20 bg-gradient-to-br from-indigo-500 to-purple-600 text-white p-4 rounded-xl shadow-xl hidden md:block z-20">
-                <div className="text-center">
-                    <p className="text-[10px] font-semibold opacity-80">Subject Link</p>
-                    <p className="text-base font-bold">Perfect</p>
-                </div>
-            </div>
         </div>
     );
 }
