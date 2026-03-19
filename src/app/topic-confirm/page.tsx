@@ -93,13 +93,13 @@ function TopicConfirmContent() {
   const onConfirm = async () => {
     if (!topic) return;
     if (!getAccessToken()) {
-      alert("기록 저장과 보고서 생성은 로그인 후 가능합니다.");
-      router.push("/login");
+      router.push("/login?callback=" + encodeURIComponent(window.location.pathname + window.location.search));
       return;
     }
     setGeneratingReport(true);
     try {
       const res = await api.post<{ report_id: string }>("/reports/generate", { topic_id: topic.topic_id });
+      // Redirect back to report detail page to watch progress
       router.push(`/report/${res.report_id}`);
     } catch (e) {
       console.error(e);
@@ -110,32 +110,23 @@ function TopicConfirmContent() {
 
   if (loading) {
     const progress = 100 * (1 - Math.pow(0.1, elapsedMs / 10000));
+    const currentPhase = 
+      progress < 25 ? "입력 분석" :
+      progress < 65 ? "주제 탐색" : "최종 선택";
+
     return (
       <div className="min-h-screen bg-[linear-gradient(135deg,#f8fafc_0%,#fff7ed_45%,#eef2ff_100%)] py-12 px-4">
         <div className="max-w-3xl mx-auto">
           <PhaseProgress
             title="주제를 생성하고 있습니다"
-            subtitle="입력한 과목/단원/진로를 바탕으로 가장 적합한 1개 주제를 찾고 있어요."
+            subtitle="입력한 과목/단원/진로를 바탕으로 가장 적합한 주제를 찾고 있어요."
             progress={progress}
+            currentPhase={currentPhase}
             phases={[
-              { label: "입력 분석", description: "교과 범위와 진로 키워드를 구조화합니다.", threshold: 20 },
-              { label: "주제 탐색", description: "후보를 검토하고 적합도를 계산합니다.", threshold: 55 },
-              { label: "최종 선택", description: "중복도를 줄이고 1개 주제로 압축합니다.", threshold: 85 },
+              { label: "입력 분석", description: "교과 범위와 진로 키워드를 구조화합니다.", threshold: 25 },
+              { label: "주제 탐색", description: "후보를 검토하고 적합도를 계산합니다.", threshold: 65 },
+              { label: "최종 선택", description: "중복도를 줄이고 가장 나은 주제로 압축합니다.", threshold: 90 },
             ]}
-            funMessages={[
-              "탐구 스캐너가 교과 개념과 진로 키워드를 매칭하는 중이에요.",
-              "남들과 겹치지 않는 주제를 찾기 위해 중복도를 줄이고 있어요.",
-              "보고서까지 자연스럽게 이어질 수 있는 주제만 남기고 있어요.",
-              "잠깐만요. 지금 가장 '세특 친화적'인 조합을 고르는 중입니다.",
-            ]}
-            activityLogs={[
-              "과목/단원 파라미터 정규화 완료",
-              "진로 키워드 가중치 계산 완료",
-              "주제 후보 1차 생성",
-              "중복도 및 실현가능성 필터링",
-              "최종 후보 1개 확정",
-            ]}
-            tip="주제는 하나만 보여주고, 필요하면 재추천으로 다음 후보를 확인할 수 있어요."
           />
         </div>
       </div>
@@ -157,7 +148,7 @@ function TopicConfirmContent() {
         <div className="rounded-3xl border bg-white/80 backdrop-blur px-8 py-7 shadow-sm">
           <p className="text-xs font-semibold text-slate-500 mb-2">추천 완료</p>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight">단 하나의 추천 주제</h1>
-          <p className="text-slate-600 mt-2">마음에 들면 바로 보고서를 생성하고, 아니면 재추천을 요청할 수 있습니다.</p>
+          <p className="text-slate-600 mt-2">나의 생기부에 가장 잘 어울리는 단 하나의 주제를 제안합니다.</p>
         </div>
 
         <Card className="rounded-3xl border-slate-200/70 shadow-sm overflow-hidden">
@@ -179,18 +170,12 @@ function TopicConfirmContent() {
                 <span key={t} className="px-3 py-1 rounded-full bg-slate-100 text-xs font-medium">#{t}</span>
               ))}
             </div>
-            <div className="grid md:grid-cols-2 gap-3 pt-1">
-              <Button onClick={onConfirm} disabled={generatingReport} className="h-12 bg-slate-900 hover:bg-slate-950 rounded-xl">
+            <div className="flex justify-center pt-1">
+              <Button onClick={onConfirm} disabled={generatingReport} className="h-12 bg-slate-900 hover:bg-slate-950 rounded-xl px-12">
                 <CheckCircle2 className="w-4 h-4 mr-2" />
                 {generatingReport ? "보고서 생성 중..." : "이 주제로 보고서 생성"}
               </Button>
-              <Button variant="outline" onClick={() => fetchTopic(true)} disabled={loading || generatingReport} className="h-12 rounded-xl">
-                <RefreshCcw className="w-4 h-4 mr-2" /> 다른 주제 보기
-              </Button>
             </div>
-            <Button variant="ghost" onClick={() => router.push("/subject")} className="w-full h-11 rounded-xl text-slate-600">
-              <Wand2 className="w-4 h-4 mr-2" /> 입력값 수정하기
-            </Button>
           </CardContent>
         </Card>
       </div>

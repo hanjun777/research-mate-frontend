@@ -45,7 +45,9 @@ export default function LoginPage() {
       if (data.access_token) {
         setAccessToken(data.access_token);
       }
-      router.push("/subject");
+      const params = new URLSearchParams(window.location.search);
+      const callback = params.get("callback") || "/";
+      router.push(callback);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "로그인 중 오류가 발생했습니다.");
     } finally {
@@ -83,7 +85,11 @@ export default function LoginPage() {
               <div className="border-t" />
               <span className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 top-1/2 bg-white px-2 text-xs text-slate-500">또는</span>
             </div>
-            <GoogleLoginButton onSuccess={() => router.push("/subject")} />
+            <GoogleLoginButton onSuccess={() => {
+              const params = new URLSearchParams(window.location.search);
+              const callback = params.get("callback") || "/";
+              router.push(callback);
+            }} />
             <div className="text-center text-sm text-slate-500 pt-2">
               아직 계정이 없으신가요?{" "}
               <Button variant="link" className="p-0 text-blue-600 font-bold" onClick={() => router.push("/register")} type="button">

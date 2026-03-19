@@ -20,6 +20,7 @@ import "katex/dist/katex.min.css";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PhaseProgress } from "@/components/common/PhaseProgress";
+import { DualAIWorkflow } from "@/components/common/DualAIWorkflow";
 import { Input } from "@/components/ui/input";
 import { getAccessToken } from "@/lib/auth";
 import { api } from "@/lib/api/client";
@@ -71,6 +72,8 @@ export default function ReportDetailPage() {
   const [editMode, setEditMode] = useState(false);
   const [loadingElapsedMs, setLoadingElapsedMs] = useState(0);
   const [generatingElapsedMs, setGeneratingElapsedMs] = useState(0);
+  const [showProgressUI, setShowProgressUI] = useState(true);
+  const [forceCompleteProgress, setForceCompleteProgress] = useState(false);
 
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
@@ -86,21 +89,23 @@ export default function ReportDetailPage() {
   }, [loading]);
 
   useEffect(() => {
-    if (!isGenerating) return;
+    if (!showProgressUI) return;
     const startedAt = Date.now();
     const timer = setInterval(() => setGeneratingElapsedMs(Date.now() - startedAt), 250);
     return () => clearInterval(timer);
-  }, [isGenerating, reportId]);
+  }, [showProgressUI, reportId]);
 
   useEffect(() => {
     const token = getAccessToken();
     if (!token) {
-      router.replace("/login");
+      router.replace(`/login?callback=/report/${reportId}`);
       return;
     }
 
     let mounted = true;
     let timer: NodeJS.Timeout | null = null;
+    let finishTimer: NodeJS.Timeout | null = null;
+    let wasGenerating = false;
 
     const fetchReport = async () => {
       try {
@@ -113,7 +118,7 @@ export default function ReportDetailPage() {
           const value = res.content?.[section.key];
           if (typeof value === "string") map[section.key] = value;
         }
-        setContent((prev) => (Object.keys(prev).length > 0 && isGenerating ? prev : map));
+        setContent((prev) => (Object.keys(prev).length > 0 && res.status === "generating" ? prev : map));
         const rawSections = res.content?.sections;
         if (Array.isArray(rawSections)) {
           const normalized = rawSections
@@ -123,19 +128,35 @@ export default function ReportDetailPage() {
               content: typeof item.content === "string" ? item.content : "",
             }))
             .filter((item) => item.heading && item.content);
-          setSections((prev) => (prev.length > 0 && isGenerating ? prev : normalized));
-        } else if (!isGenerating) {
+          setSections((prev) => (prev.length > 0 && res.status === "generating" ? prev : normalized));
+        } else if (res.status !== "generating") {
           setSections([]);
         }
 
         if (res.status === "generating") {
+          wasGenerating = true;
+          setShowProgressUI(true);
+          setForceCompleteProgress(false);
           timer = setTimeout(fetchReport, 2500);
         } else {
-          setLoading(false);
+          if (res.status === "completed" && wasGenerating) {
+            wasGenerating = false;
+            setForceCompleteProgress(true);
+            setShowProgressUI(true);
+            finishTimer = setTimeout(() => {
+              if (mounted) {
+                setShowProgressUI(false);
+                setLoading(false);
+              }
+            }, 3000);
+          } else {
+            setShowProgressUI(false);
+            setLoading(false);
+          }
         }
       } catch (e) {
         console.error(e);
-        router.replace("/login");
+        router.replace(`/login?callback=/report/${reportId}`);
         setLoading(false);
       }
     };
@@ -145,8 +166,9 @@ export default function ReportDetailPage() {
     return () => {
       mounted = false;
       if (timer) clearTimeout(timer);
+      if (finishTimer) clearTimeout(finishTimer);
     };
-  }, [reportId, isGenerating, router]);
+  }, [reportId, router]);
 
   const references = useMemo(() => {
     const refs = report?.content?.references;
@@ -190,6 +212,17 @@ export default function ReportDetailPage() {
       message: typeof obj.message === "string" ? obj.message : "",
     };
   }, [report?.content, report?.progress, report?.phase, report?.status_message]);
+
+  const displayProgressMeta = useMemo(() => {
+    if (forceCompleteProgress) {
+      return {
+        progress: 100,
+        phase: "finalize",
+        message: "보고서 작성이 완료되었습니다. 최종 결과물을 정리 중입니다.",
+      };
+    }
+    return progressMeta;
+  }, [progressMeta, forceCompleteProgress]);
 
   const onSave = async () => {
     if (!report) return;
@@ -254,30 +287,26 @@ export default function ReportDetailPage() {
     return (
       <div className="min-h-screen bg-[linear-gradient(180deg,#f1f5f9_0%,#ffffff_30%,#eef2ff_100%)] py-8 px-4">
         <div className="max-w-3xl mx-auto">
-          <PhaseProgress
-            title="보고서 데이터를 불러오는 중"
-            subtitle="작성된 섹션과 품질 지표를 동기화하고 있어요."
-            progress={progress}
-            phases={[
-              { label: "보고서 조회", description: "저장된 보고서를 확인합니다.", threshold: 30 },
-              { label: "섹션 파싱", description: "본문과 메타 정보를 구성합니다.", threshold: 60 },
-              { label: "편집 준비", description: "채팅/저장 가능한 상태로 준비합니다.", threshold: 85 },
+          <DualAIWorkflow
+            title="보고서 생성 중"
+            subtitle="AI 보조 연구원이 교과서 기반 보고서를 작성하고 있습니다."
+            progress={displayProgressMeta?.progress ?? 0}
+            writerTitle="Writer AI"
+            writerSubtitle="교과서 문맥 수집 및 보고서 전문 작성"
+            writerCurrentPhase={displayProgressMeta?.phase || "retrieve"}
+            writerRealTimeMessage={displayProgressMeta?.message || ""}
+            writerPhases={[
+              { label: "retrieve & plan", description: "교과서에서 RAG 컨텍스트를 추출하고 분석 계획을 수집합니다.", threshold: 48 },
+              { label: "generate", description: "교과서 내용과 탐구 계획을 밀접하게 반영하여 초안을 작성합니다.", threshold: 74 },
+              { label: "rewrite", description: "AI 점검 결과에 따른 피드백을 적용해 보강 및 재작성합니다.", threshold: 94 },
+              { label: "finalize", description: "최종 문서 형식을 맞추고 참고문헌을 정리합니다.", threshold: 100 },
             ]}
-            funMessages={[
-              "문서 서식을 정리해서 읽기 좋은 상태로 만드는 중이에요.",
-              "품질 점수와 참고 문맥을 연결하고 있어요.",
-              "채팅 조교가 보고서 문맥을 미리 학습하고 있어요.",
+            reviewerTitle="Reviewer AI"
+            reviewerSubtitle="8가지 루브릭 기반 품질 실시간 평가"
+            reviewerCurrentPhase={displayProgressMeta?.phase || "retrieve"}
+            reviewerPhases={[
+              { label: "critique", description: "엄격한 루브릭을 기준으로 작성된 보고서의 품질을 채점하고 피드백을 생성합니다.", threshold: 86 },
             ]}
-            activityLogs={[
-              "보고서 메타데이터 조회 성공",
-              "본문 섹션 맵핑 진행 중",
-              "품질/파이프라인 정보 결합",
-              "편집기 초기화 완료",
-            ]}
-            quiz={{
-              question: "연구 보고서에서 '한계' 섹션이 중요한 이유는?",
-              answerHint: "결과 해석의 신뢰 범위를 명확히 함",
-            }}
           />
         </div>
       </div>
@@ -292,9 +321,9 @@ export default function ReportDetailPage() {
           <div>
             <h1 className="text-2xl md:text-3xl font-black tracking-tight">보고서 상세</h1>
             <p className="text-sm text-slate-600 mt-1">상태: {report.status}</p>
-            {isGenerating && progressMeta?.phase && (
+            {showProgressUI && displayProgressMeta?.phase && (
               <p className="text-xs text-indigo-700 mt-1">
-                실시간 단계: {progressMeta.phase} ({progressMeta.progress ?? 0}%)
+                실시간 단계: {displayProgressMeta.phase}
               </p>
             )}
           </div>
@@ -344,25 +373,20 @@ export default function ReportDetailPage() {
                     }
                   }
                 }
-                setEditMode((prev) => !prev);
-              }}
-              disabled={isGenerating}
-            >
-              {editMode ? "보기 모드" : "편집 모드"}
+              setEditMode((prev) => !prev);
+            }}
+            disabled={showProgressUI}
+          >
+            {editMode ? "보기 모드" : "편집 모드"}
+          </Button>
+          {editMode && (
+            <Button onClick={onSave} disabled={saving || showProgressUI} className="bg-slate-900 hover:bg-slate-950">
+              {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}저장
             </Button>
-            {editMode && (
-              <Button onClick={onSave} disabled={saving || isGenerating} className="bg-slate-900 hover:bg-slate-950">
-                {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Save className="w-4 h-4 mr-2" />}저장
-              </Button>
-            )}
-          </div>
+          )}
+        </div>
         </div>
 
-        <div className="w-full no-print flex justify-end mb-4">
-          <Button variant="outline" size="sm" onClick={() => router.push("/")} className="text-slate-600">
-            목록으로
-          </Button>
-        </div>
 
         <div className="w-full print:block print:overflow-visible">
           <div className="relative w-full print:static print:block print:overflow-visible" style={{ perspective: "1000px" }}>
@@ -404,44 +428,6 @@ export default function ReportDetailPage() {
                     </div>
                   </div>
 
-                  {isGenerating ? (
-                    <PhaseProgress
-                      title="LangGraph 보고서 생성 중"
-                      subtitle="교과서 RAG, 계획, 생성, 비평, 재작성 단계를 순차 실행합니다."
-                      progress={
-                        progressMeta?.progress ?? (() => {
-                          const elapsed = generatingElapsedMs;
-                          if (elapsed < 240000) return Math.min(80, elapsed / 6000);
-                          return Math.min(99, 80 + (elapsed - 240000) / 5000);
-                        })()
-                      }
-                      realTimeMessage={progressMeta?.message || ""}
-                      phases={[
-                        { label: "RAG 수집", description: "교과서 문맥과 관련 근거를 수집합니다.", threshold: 18 },
-                        { label: "탐구 계획", description: "연구 질문과 분석 절차를 설계합니다.", threshold: 38 },
-                        { label: "초안 생성", description: "구조화된 보고서 본문을 작성합니다.", threshold: 62 },
-                        { label: "비평/개선", description: "품질 점검 후 재작성 루프를 수행합니다.", threshold: 88 },
-                      ]}
-                      funMessages={[
-                        progressMeta?.message || "처리 상태를 동기화하는 중입니다.",
-                        "RAG가 교과서 근거를 추출해 논리의 뼈대를 세우는 중입니다.",
-                        "AI 비평 에이전트가 문장 밀도와 근거 연결을 검사하고 있어요.",
-                        "점수가 기준에 못 미치면 자동으로 재작성 라운드를 진행합니다.",
-                        "거의 완료됐어요. 결론의 설득력을 마지막으로 점검하고 있습니다.",
-                      ]}
-                      activityLogs={[
-                        progressMeta?.phase ? `현재 단계: ${progressMeta.phase}` : "현재 단계 동기화 중",
-                        "Textbook RAG 컨텍스트 검색 완료",
-                        "탐구 계획 노드 실행 완료",
-                        "초안 생성 노드 실행 완료",
-                        "비평 노드 점수 계산 중",
-                        "필요 시 재작성 루프 적용",
-                        "최종 품질 검증 및 저장 준비",
-                      ]}
-                      tip="생성 중에도 페이지를 닫지 않아도 됩니다. 기록 페이지에서 다시 확인할 수 있어요."
-                    />
-                  ) : (
-                    <>
                       {report.status === "failed" && (
                         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 mb-6">
                           <p className="font-semibold mb-1">생성 실패</p>
@@ -505,8 +491,6 @@ export default function ReportDetailPage() {
                           ))
                         )}
                       </div>
-                    </>
-                  )}
                 </div>
               </div>
             </div>

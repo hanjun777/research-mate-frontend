@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { api } from "@/lib/api/client";
+import { getAccessToken } from "@/lib/auth";
 
 type UnitMedium = {
   unit_medium: string;
@@ -37,6 +38,13 @@ export default function SubjectPage() {
   const [small, setSmall] = useState(NONE_VALUE);
   const [career, setCareer] = useState("");
   const [difficulty, setDifficulty] = useState("70");
+
+  useEffect(() => {
+    if (!getAccessToken()) {
+      alert("주제 추천과 보고서 생성을 위해 먼저 로그인해주세요.");
+      router.push("/login?callback=/subject");
+    }
+  }, [router]);
 
   useEffect(() => {
     const load = async () => {
@@ -95,7 +103,7 @@ export default function SubjectPage() {
             <Sparkles className="w-3 h-3" /> 세특연구소 Workflow
           </div>
           <h1 className="text-3xl md:text-4xl font-black tracking-tight mb-3">심화 탐구 입력</h1>
-          <p className="text-slate-600">과목과 단원을 고르면 AI가 주제 1개를 추천하고, 바로 고퀄리티 보고서 생성으로 이어집니다.</p>
+          <p className="text-slate-600">과목과 단원을 고르면 AI가 주제를 추천하고, 바로 고퀄리티 보고서 생성으로 이어집니다.</p>
         </div>
 
         {fetchError && (
@@ -127,22 +135,24 @@ export default function SubjectPage() {
 
               <div className="space-y-2">
                 <Label>대주제 (필수)</Label>
-                <Select
-                  value={large}
-                  onValueChange={(v) => {
-                    setLarge(v);
-                    setMedium(NONE_VALUE);
-                    setSmall(NONE_VALUE);
-                  }}
-                >
-                  <SelectTrigger><SelectValue placeholder="대주제 선택" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={NONE_VALUE}>선택 안함</SelectItem>
-                    {units.map((u) => (
-                      <SelectItem key={u.unit_large} value={u.unit_large}>{u.unit_large}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Select
+                    value={large}
+                    onValueChange={(v) => {
+                      setLarge(v);
+                      setMedium(NONE_VALUE);
+                      setSmall(NONE_VALUE);
+                    }}
+                  >
+                    <SelectTrigger><SelectValue placeholder="대주제 선택" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={NONE_VALUE}>선택 안함</SelectItem>
+                      {units.map((u) => (
+                        <SelectItem key={u.unit_large} value={u.unit_large}>{u.unit_large}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -221,7 +231,7 @@ export default function SubjectPage() {
           </Card>
 
           <Button type="submit" disabled={loading} className="w-full h-12 text-base font-semibold rounded-xl bg-slate-900 hover:bg-slate-950">
-            {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />추천 준비 중...</> : "주제 1개 추천받기"}
+            {loading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />추천 준비 중...</> : "주제 추천받기"}
           </Button>
         </form>
       </div>

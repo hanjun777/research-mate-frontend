@@ -8,21 +8,21 @@ import { motion } from 'framer-motion';
 
 const testimonials = [
     {
-        name: "김민수",
-        school: "서울고등학교 2학년",
-        text: "주제 선정하는 게 매번 고역이었는데, 세특연구소 덕분에 이번 생기부 수행평가에서 과목 선생님께 칭찬받았어요!",
+        name: "김기수",
+        school: "가온고등학교 2학년",
+        text: "원래 생기부용 보고서를 직접 작성하는 편인데, 시험기간이랑 겹쳐서 세특연구소 사용해봤어요. 이제 직접 안 쓰고 계속 세특연구소 쓰려고요. 퀄리티 좋고 세특용 문장까지 정리해줘서 너무 편해요. 강추드려요.",
         role: "수학 탐구 보고서"
     },
     {
-        name: "이지연",
-        school: "강남여자고등학교 3학년",
-        text: "진로와 연관된 심화 주제를 찾기가 어려웠는데, AI가 제 꿈에 딱 맞는 보고서 방향을 제시해줘서 정말 큰 도움이 됐습니다.",
+        name: "강민재",
+        school: "광교고등학교 1학년",
+        text: "덕분에 생기부에 수학 탐구 보고서 쉽게 넣었어요. 감사합니다 ㅎㅎㅎ",
         role: "생명과학 심화 탐구"
     },
     {
-        name: "박준혁",
-        school: "부산중앙고등학교 1학년",
-        text: "처음 쓰는 심화 보고서라 막막했지만 가이드가 친절해서 끝까지 완성할 수 있었습니다. 강력 추천해요!",
+        name: "류한나",
+        school: "흥덕고등학교 1학년",
+        text: "수행평가용으로 사용했는데 완전 신세계에요. 비슷한 다른 사이트에서도 써봤는데 여기가 훨씬 결과가 좋은 것 같아요.",
         role: "정보통신 융합 탐구"
     }
 ];
@@ -38,14 +38,14 @@ export function TestimonialCarousel() {
                     transition={{ delay: idx * 0.1 }}
                 >
                     <Card className="border-0 shadow-lg h-full">
-                        <CardContent className="p-8">
+                        <CardContent className="pt-8 px-8 pb-5 h-full flex flex-col">
                             <div className="flex gap-1 mb-4">
                                 {[...Array(5)].map((_, i) => (
                                     <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                                 ))}
                             </div>
-                            <p className="text-slate-600 mb-6 italic">"{item.text}"</p>
-                            <div className="flex items-center gap-4">
+                            <p className="text-slate-600 mb-6 italic grow">"{item.text}"</p>
+                            <div className="flex items-center gap-4 mt-auto">
                                 <Avatar className="w-10 h-10">
                                     <AvatarFallback className="bg-blue-100 text-blue-600 font-bold">{item.name[0]}</AvatarFallback>
                                 </Avatar>
